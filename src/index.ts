@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import codingTools from './config/coding.js';
 import generalTools from './config/general.js';
+import learningTools from './config/learning.js';
 import requirementTools from './config/requirement.js';
 import writingTools from './config/writing.js';
 
@@ -11,6 +12,7 @@ const tools = [
   ...codingTools,
   ...requirementTools,
   ...generalTools,
+  ...learningTools,
 ];
 
 const server = new FastMCP({
