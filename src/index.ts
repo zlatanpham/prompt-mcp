@@ -8,7 +8,7 @@ interface Tool {
   args?: Array<{
     description: string;
     name: string;
-    type: string;
+    type: 'array' | 'number' | 'string';
   }>;
   description: string;
   id: string;
@@ -30,6 +30,9 @@ async function init() {
       execute: async args => {
         return tool.prompt.replace(/{(\w+)}/g, (_, key) => {
           if (key in args) {
+            if (Array.isArray(args[key])) {
+              return args[key].map((item: string) => `"${item}"`).join(', ');
+            }
             return args[key];
           }
           return `{${key}}`;
@@ -39,10 +42,19 @@ async function init() {
       parameters: z.object(
         (tool.args || []).reduce(
           (acc, arg) => {
-            acc[arg.name] =
-              arg.type === 'string'
-                ? z.string().describe(arg.description)
-                : z.number().describe(arg.description);
+            let argType: z.ZodTypeAny;
+
+            if (arg.type === 'array') {
+              argType = z.array(z.string()).describe(arg.description);
+            } else if (arg.type === 'number') {
+              argType = z.number().describe(arg.description);
+            } else if (arg.type === 'string') {
+              argType = z.string().describe(arg.description);
+            } else {
+              throw new Error(`Unsupported argument type: ${arg.type}`);
+            }
+
+            acc[arg.name] = argType;
             return acc;
           },
           {} as Record<string, z.ZodTypeAny>,
