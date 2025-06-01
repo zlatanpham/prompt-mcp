@@ -19,7 +19,7 @@ interface Tool {
 async function init() {
   const server = new FastMCP({
     name: 'prompt-mcp',
-    version: '0.0.1',
+    version: '1.0.1',
   });
 
   const tools = await loadTools();
